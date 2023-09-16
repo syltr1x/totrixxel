@@ -2,7 +2,7 @@
 #Variables
 root_verify=$(whoami)
 usuario=$(users)
-text=$(ifconfig | grep broadcast); arr=(${text//" "/ }); ip=${arr[1]}
+text=$(ip a | grep broadcast); arr=(${text//" "/ }); ip=${arr[1]}
 
 #Colours
 BLACK="\033[30m"
