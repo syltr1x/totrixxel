@@ -151,7 +151,7 @@ function charge_prefabs() {
     if [ $cck != "n" ] && [ $cck == "N" ]
     then
         cp totrixxel.sh /usr/bin/
-    mv /usr/bin/totrixxel.sh /usr/bin/totrixxel
+        mv /usr/bin/totrixxel.sh /usr/bin/totrixxel
         cp -r prefabs /usr/bin/
     init_program
 }
