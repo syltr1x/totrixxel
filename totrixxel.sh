@@ -147,7 +147,7 @@ function init_program() {
 
 #Cargar Prefabricados
 function charge_prefabs() {
-    echo "[?] Quieres instalar prefabs? "read cck
+    echo "[?] Quieres instalar prefabs? "; read cck
     if [ $cck != "n" ] && [ $cck == "N" ]
     then
         cp totrixxel.sh /usr/bin/
