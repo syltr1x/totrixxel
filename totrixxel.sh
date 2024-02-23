@@ -78,7 +78,7 @@ function init_program() {
     fi
     
     echo -e "\nQue quieres hacer?"
-    echo -e "[1] Montar pagina local      [2] Descargar prefabs (git)\n[3] Iniciar pagina local"; read qaction
+    echo -e "[1] Montar pagina local      [2] Descargar prefabs (git)\n[3] Iniciar pagina local     [4] Iniciar DNS"; read qaction
     if [ $qaction == "1" ]
     then
         echo -e "Tienes una pagina?[y/n] >> "; read qpagexist
@@ -142,6 +142,45 @@ function init_program() {
         echo -e "[*] El servidor Python se ha cerrado correctamente."
         kill $pid
         echo -e "[*] El servidor Ngrok se ha cerrado correctamente."
+    elif [ $qaction == "4" ]
+    then
+        if which "dnsmasq" >/dev/null 2>&1; then
+            echo "Domain Name."; read dname
+            echo -e "\nIp Address."; read ipaddr
+            echo "Add or Rewrite DNS config [A/r]"; read chkf
+            if [ $chkf == "r" -o $chkf == "R" ]; then
+                echo -e "\nold Dns config file saved in: ~/.dnsmasq.conf.old"
+                echo -e "address=/$dname/$ipaddr" > /etc/dnsmasq.conf
+                sudo systemctl restart dnsmasq.service
+            else
+                echo -e "\naddress=/$dname/$ipaddr" >> /etc/dnsmasq.conf
+                echo "[+] /etc/dnsmasq.conf is updated."
+            fi
+        else
+            osdata=cat /etc/os-release | grep ID= | head -n 1
+            arr=(${osdata//"="/ }); osid=${arr[1]}
+            if [ $osid == "arch" -o $osid == "manjaro" ]; then
+                pacman -S dnsmasq
+            elif [ $osid == "debian" -o $osid == "kali" -o $osid == "parrot" -o $osid == "ubuntu" -o $osid == "linuxmint" ]; then
+                apt-get instal dnsmasq
+            elif [ $osid == "fedora" ]; then
+                dnf install dnsmasq
+            elif [ $osid == "centos" -o $osid == "rhel" ]; then
+                yum install dnsmasq
+            elif [ $osid == "opensuse" ]; then
+                zypper install dnsmasq
+            elif [ $osid == "gentoo" ]; then
+                emerge dnsmasq
+            elif [ $osid == "alpine" ]; then
+                apk add dnsmasq 
+            else
+                echo "No fue posible obtener el ID de su sistema. "
+                echo "Por favor especifique el comando para instalar paquetes en su sistema"
+                echo "Ej: apt-get install"; read syscom
+                $($syscom dnsmasq)
+            fi
+        fi
+        echo -e "[]"
     fi
 }
 
