@@ -43,14 +43,14 @@ function ctrl_c() {
 
 #Programa
 function banner() {
-    echo -e "$YELLOW┏━━━━━━━━━━┓       ┏━━━━━━━━━━┓               ┏━━┓    ┏━━┓                 " 
-    echo -e "$YELLOW┃          ┃       ┃          ┃$NORMAL         ┏━┓$YELLOW   ┗┓ ┗┓  ┏┛ ┏┛$NORMAL              ┏━┓"
-    echo -e "$YELLOW┗━━━┓  ┏━━━┛       ┗━━━┓  ┏━━━┛$NORMAL         ┗━┛$YELLOW    ┗┓ ┗┓┏┛ ┏┛$NORMAL    ┏━━━━━━┓   ┃ ┃"
-    echo -e "$YELLOW    ┃  ┃$NORMAL   ┏━━━━━━━┓$YELLOW   ┃  ┃$NORMAL   ┏━━━━━┓   ┏━┓$YELLOW     ┗┓ ┗┛ ┏┛$NORMAL     ┃ ┏━━┓ ┃   ┃ ┃"
-    echo -e "$YELLOW    ┃  ┃$NORMAL   ┃ ┏━━━┓ ┃$YELLOW   ┃  ┃$NORMAL   ┃ ┏━━━┛   ┃ ┃$YELLOW     ┏┛ ┏┓ ┗┓$NORMAL     ┃ ┃━━┛ ┃   ┃ ┃"
-    echo -e "$YELLOW    ┃  ┃$NORMAL   ┃ ┃   ┃ ┃$YELLOW   ┃  ┃$NORMAL   ┃ ┃       ┃ ┃$YELLOW    ┏┛ ┏┛┗┓ ┗┓$NORMAL    ┃ ┃━━━━┛   ┃ ┃" 
-    echo -e "$YELLOW    ┃  ┃$NORMAL   ┃ ┗━━━┛ ┃$YELLOW   ┃  ┃$NORMAL   ┃ ┃       ┃ ┃$YELLOW   ┏┛ ┏┛  ┗┓ ┗┓$NORMAL   ┃ ┗━━━━┓   ┃ ┃"
-    echo -e "$YELLOW    ┗━━┛$NORMAL   ┗━━━━━━━┛$YELLOW   ┗━━┛$NORMAL   ┗━┛       ┗━┛$YELLOW   ┗━━┛    ┗━━┛$NORMAL   ┗━━━━━━┛   ┗━┛"
+    echo -e "$YELLOW┏━━━━━━━━━━┓$WHITE       ┏━━━━━━━━━━┓             $YELLOW  ┏━━┓━┓  ┏━━┓━┓$WHITE                  " 
+    echo -e "$YELLOW┃          ┃$WHITE       ┃          ┃         ┏━┓ $YELLOW  ┗┓ ┗┓┗┓┏┛ ┏┛┏┛$WHITE               ┏━┓"
+    echo -e "$YELLOW┗━━━┓  ┏━━━┛$WHITE       ┗━━━┓  ┏━━━┛         ┗━┛ $YELLOW   ┗┓ ┗┓┏┛ ┏┛┏┛ $WHITE    ┏━━━━━━┓   ┃ ┃"
+    echo -e "$YELLOW    ┃  ┃$WHITE   ┏━━━━━━━┓   ┃  ┃   ┏━━━━━┓   ┏━┓ $YELLOW    ┗┓ ┗┛ ┏┛┏┛  $WHITE    ┃ ┏━━┓ ┃   ┃ ┃"
+    echo -e "$YELLOW    ┃  ┃$WHITE   ┃ ┏━━━┓ ┃   ┃  ┃   ┃ ┏━━━┛   ┃ ┃ $YELLOW    ┏┛ ┏┓ ┗┓┗┓  $WHITE    ┃ ┃━━┛ ┃   ┃ ┃"
+    echo -e "$YELLOW    ┃  ┃$WHITE   ┃ ┃   ┃ ┃   ┃  ┃   ┃ ┃       ┃ ┃ $YELLOW   ┏┛ ┏┛┗┓ ┗┓┗┓ $WHITE    ┃ ┃━━━━┛   ┃ ┃" 
+    echo -e "$YELLOW    ┃  ┃$WHITE   ┃ ┗━━━┛ ┃   ┃  ┃   ┃ ┃       ┃ ┃ $YELLOW  ┏┛ ┏┛┏┛┗┓ ┗┓┗┓$WHITE    ┃ ┗━━━━┓   ┃ ┃"
+    echo -e "$YELLOW    ┗━━┛$WHITE   ┗━━━━━━━┛   ┗━━┛   ┗━┛       ┗━┛ $YELLOW  ┗━━┛━┛  ┗━━┛━┛$WHITE    ┗━━━━━━┛   ┗━┛"
 }
 
 function init_program() {
