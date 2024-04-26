@@ -1,6 +1,5 @@
 #!/bin/bash
 #Variables
-root_verify=$(whoami)
 usuario=$(users)
 text=$(ip a | grep broadcast); arr=(${text//" "/ }); ip=${arr[1]}
 
@@ -215,7 +214,7 @@ function charge_prefabs() {
     init_program
 }
 
-if [ $root_verify != "root" ]
+if [ "$(id -u)" == "0" ]
 then
     echo -e "[-] Es necesario ejecutar Totrixxel como super-usuario (root)"
 else
